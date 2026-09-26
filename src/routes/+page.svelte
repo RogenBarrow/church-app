@@ -1,2 +1,14 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script>
+    /** @type {import('./$types').PageProps} */
+    let { data } = $props();
+</script>
+
+
+    {#if  data.user}
+        <p>Welcome, { data.user.email }</p>
+        <form action="/logout" method="POST">
+        <button>Logout</button>
+        </form>
+        {:else}
+        <a href="/login">Login</a>
+    {/if}

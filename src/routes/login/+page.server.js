@@ -10,7 +10,7 @@ export const actions = {
 		if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
 			return fail(400, {
 				email: typeof email === 'string' ? email : '',
-				message: 'Email i kontraseña ta rekerí'
+				message: 'Email and password are required'
 			});
 		}
 
@@ -29,7 +29,7 @@ export const actions = {
 		if (typeof email !== 'string' || typeof password !== 'string' || !email || !password) {
 			return fail(400, {
 				email: typeof email === 'string' ? email : '',
-				message: 'Email i kontraseña ta rekerí'
+				message: 'Email and password are required'
 			});
 		}
 

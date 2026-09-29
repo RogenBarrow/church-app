@@ -5,10 +5,16 @@
 
 <h1>Services</h1>
 
+
 <ul>
 {#each data.services as service }
-	<li>{service.service_date} {service.theme ?? service.title}</li>
+<a href="/services/{service.id}">
+    <li>{service.service_date} {service.theme ?? service.title}</li>
+</a>
+
 {:else}
 	<li>No upcoming services</li>
+
 {/each}
 </ul>
+

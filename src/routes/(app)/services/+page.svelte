@@ -8,10 +8,7 @@
 
 <ul>
 {#each data.services as service }
-<a href="/services/{service.id}">
-    <li>{service.service_date} {service.theme ?? service.title}</li>
-</a>
-
+    <li><a href="/services/{service.id}">{service.service_date} {service.theme ?? service.title}</a></li>
 {:else}
 	<li>No upcoming services</li>
 

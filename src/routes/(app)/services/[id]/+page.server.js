@@ -1,4 +1,4 @@
-import { error } from '@sveltejs/kit';
+import { error, fail } from '@sveltejs/kit';
 
 
 
@@ -27,3 +27,63 @@ export const load = async ({ params, locals }) => {
 
                 return { service }
 }
+
+/** @satisfies {import('./$types').Actions} */
+export const actions = {
+    addSection: async ({ request, locals, params }) => {
+        const formdata = await request.formData();
+		const title = formdata.get('title');
+		const leader_label = formdata.get('leader_label');
+		const position = Number(formdata.get('position'));
+
+        if (typeof title !== 'string' || !title) {
+			return fail(400, {
+				title: typeof title === 'string' ? title : '',
+				message: 'Title cannot be empty'
+			});
+        }
+
+        const { error: insertError } = await locals.supabase
+                            .from('service_sections')
+                            .insert({ service_id: params.id, title, leader_label: leader_label || null, position })
+		if (insertError) {
+            return fail(400, { message: insertError.message})
+        }
+
+        return { success: true }
+    },
+
+    addItem: async ({ request, locals }) => {
+        const formdata = await request.formData();
+        const section_id = formdata.get('section_id');
+        const action = formdata.get('action');
+        const duration = formdata.get('duration_min');
+        const fixed_start = formdata.get('fixed_start');
+        const position = Number(formdata.get('position'));
+
+        if (typeof section_id !== 'string' || !section_id || typeof action !== 'string' || !action) {
+            return fail(400, { message: 'Action is required' });
+        }
+
+        const { error: insertError } = await locals.supabase
+                        .from('service_items')
+                        .insert(
+                            { section_id, action, position,
+                                who: formdata.get('who') || null,
+                                sound: formdata.get('sound') || null, 
+                                screen: formdata.get('screen') || null, 
+                                fixed_start: fixed_start || null,
+                                duration_min: duration ? Number(duration) : null }
+                        )
+    
+        if (insertError) {
+            return fail(400, { message: insertError.message})
+        }
+    
+        return { success: true }
+    
+    
+    }
+
+}
+

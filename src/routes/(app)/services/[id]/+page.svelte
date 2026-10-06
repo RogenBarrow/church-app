@@ -26,6 +26,14 @@ let { data, form } = $props();
 			<span> - {section.leader_label}</span>
 		{/if}
 	</h2>
+	{#if data.profile?.role === 'pastor'}
+<form method="POST" action="?/deleteSection" use:enhance onsubmit={(event) => {
+	if (!confirm('Delete this section and all its items?')) event.preventDefault();
+}}>
+<input type="hidden" name="section_id" value={section.id}>
+<button>Delete section</button>
+</form>
+{/if}
 
 	<table class="w-full border-collapse text-sm">
 		<thead>
@@ -36,6 +44,7 @@ let { data, form } = $props();
 				<th class="border px-2 py-1 text-left align-top">Sound</th>
 				<th class="border px-2 py-1 text-left align-top">Screen</th>
 				<th class="border px-2 py-1 text-left align-top">Minutes</th>
+				<th class="border px-2 py-1 text-left align-top"></th>
 			</tr>
 		</thead>
 		<tbody>
@@ -47,9 +56,24 @@ let { data, form } = $props();
                     <td class="whitespace-pre-line border px-2 py-1 text-left align-top">{item.sound}</td>
                     <td class="whitespace-pre-line border px-2 py-1 text-left align-top">{item.screen}</td>
                     <td class="whitespace-pre-line border px-2 py-1 text-left align-top">{item.duration_min}</td>
+					{#if data.profile?.role === 'pastor'}
+					<td class="border px-2 py-1">
+						<form
+							method="POST"
+							action="?/deleteItem"
+							use:enhance
+							onsubmit={(event) => {
+								if (!confirm('Delete this item?')) event.preventDefault();
+							}}
+						>
+							<input type="hidden" name="item_id" value={item.id} />
+							<button class="text-red-600">✕</button>
+						</form>
+					</td>
+					{/if}
 				</tr>
 			{:else}
-				<tr><td colspan="6">No items in this section</td></tr>
+				<tr><td colspan="7">No items in this section</td></tr>
 			{/each}
 		</tbody>
 	</table>

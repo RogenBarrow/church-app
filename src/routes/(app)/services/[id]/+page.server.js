@@ -83,7 +83,47 @@ export const actions = {
         return { success: true }
     
     
+    },
+
+    deleteItem: async ({ request, locals }) => {
+        const formData = await request.formData();
+        const item_id = formData.get('item_id');
+
+        if (typeof item_id !== 'string' || !item_id ) {
+            return fail(400, { message: 'Item ID is missing' })
+        }
+
+    const { error: deleteError } =  await locals.supabase.from('service_items').delete().eq('id', item_id)
+
+    if (deleteError) {
+        return fail(400, { message: deleteError.message});
     }
+
+    return { success: true }
+
+    },
+
+    deleteSection: async ({ request, locals }) => {
+        const formData = await request.formData();
+        const section_id = formData.get('section_id');
+
+        if (typeof section_id !== 'string' || !section_id ) {
+            return fail(400, { message: 'Section ID is missing' })
+        }
+
+    const { error: deleteSectionError } =  await locals.supabase.from('service_sections').delete().eq('id', section_id)
+
+    if (deleteSectionError) {
+        return fail(400, { message: deleteSectionError.message});
+    }
+
+    return { success: true }
+
+    },
+
+    
+
+
 
 }
 

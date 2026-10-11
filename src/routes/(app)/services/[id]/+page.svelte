@@ -69,6 +69,11 @@ let { data, form } = $props();
 							<input type="hidden" name="item_id" value={item.id} />
 							<button class="text-red-600">✕</button>
 						</form>
+					<form method="POST" action="?/moveItem" use:enhance>
+					<input type="hidden" name="item_id" value={item.id}>
+					<button name="direction" value="up">↑</button>
+					<button name="direction" value="down">↓</button>
+					</form>
 					</td>
 					{/if}
 				</tr>
@@ -80,7 +85,6 @@ let { data, form } = $props();
     {#if data.profile?.role === 'pastor'}
 	<form method="POST" action="?/addItem" use:enhance class="mt-2 flex flex-wrap gap-2">
 		<input type="hidden" name="section_id" value={section.id} />
-		<input type="hidden" name="position" value={section.service_items.length + 1} />
         <input type="time" name="fixed_start" placeholder="Time">
         <input type="text" name="who" placeholder="Who">
         <input type="text" name="sound" placeholder="Sound">
@@ -94,7 +98,6 @@ let { data, form } = $props();
 {/each}
 {#if data.profile?.role === 'pastor'}
 <form method="POST" action="?/addSection" use:enhance>
-<input type="hidden" name="position" value="{data.service.service_sections.length + 1}">
 <input type="text" name="title" placeholder="title">
 <input type="text" name="leader_label" placeholder="leader">
 <button>Add section</button>

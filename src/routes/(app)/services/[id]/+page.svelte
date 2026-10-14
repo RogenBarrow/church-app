@@ -1,4 +1,5 @@
 <script>
+import ProgramItemRow from '$lib/components/ProgramItemRow.svelte';
 import { enhance } from '$app/forms';
     /** @type {import('./$types').PageProps} */
 let { data, form } = $props();
@@ -49,34 +50,7 @@ let { data, form } = $props();
 		</thead>
 		<tbody>
 			{#each section.service_items as item}
-				<tr>
-					<td class="border px-2 py-1 text-left align-top">{item.fixed_start ?? ''}</td>
-					<td class="whitespace-pre-line border px-2 py-1 text-left align-top">{item.action}</td>
-                    <td class="whitespace-pre-line border px-2 py-1 text-left align-top">{item.who}</td>
-                    <td class="whitespace-pre-line border px-2 py-1 text-left align-top">{item.sound}</td>
-                    <td class="whitespace-pre-line border px-2 py-1 text-left align-top">{item.screen}</td>
-                    <td class="whitespace-pre-line border px-2 py-1 text-left align-top">{item.duration_min}</td>
-					{#if data.profile?.role === 'pastor'}
-					<td class="border px-2 py-1">
-						<form
-							method="POST"
-							action="?/deleteItem"
-							use:enhance
-							onsubmit={(event) => {
-								if (!confirm('Delete this item?')) event.preventDefault();
-							}}
-						>
-							<input type="hidden" name="item_id" value={item.id} />
-							<button class="text-red-600">✕</button>
-						</form>
-					<form method="POST" action="?/moveItem" use:enhance>
-					<input type="hidden" name="item_id" value={item.id}>
-					<button name="direction" value="up">↑</button>
-					<button name="direction" value="down">↓</button>
-					</form>
-					</td>
-					{/if}
-				</tr>
+				<ProgramItemRow {item} isPastor={data.profile?.role === 'pastor'}/>
 			{:else}
 				<tr><td colspan="7">No items in this section</td></tr>
 			{/each}

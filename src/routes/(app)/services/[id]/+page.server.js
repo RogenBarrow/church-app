@@ -203,7 +203,31 @@ return { success: true };
 
     },
 
-    
+    updateItem: async ({ request, locals}) => {
+        const formdata = await request.formData();
+	    const item_id = formdata.get('item_id');
+        const action = formdata.get('action');
+        const duration = formdata.get('duration_min');
+        const fixed_start = formdata.get('fixed_start');
+
+        if (typeof item_id !== 'string' || !item_id || typeof action !== 'string' || !action) {
+            return fail(400, { message: 'Action is required' })
+        }
+
+        const { error: updateError } = await locals.supabase.from('service_items').update({ action, duration_min: duration ? Number(duration) : null, 
+            fixed_start: fixed_start || null,
+            who: formdata.get('who') || null,
+            sound: formdata.get('sound') || null,
+            screen: formdata.get('screen') || null,
+             }).eq('id', item_id)
+
+        if (updateError) {
+            return fail(400, { message: updateError.message })
+        }
+
+        return { success: true }
+        
+    }
 
 
 

@@ -14,7 +14,42 @@
 
 	/** @type {{ item: Item, isPastor: boolean }} */
 	let { item, isPastor } = $props();
+
+	let editing = $state(false);
 </script>
+
+
+ {#if editing}
+ <tr>
+ <td colspan="7" class="border px-2 py-2">
+	<form
+		method="POST"
+		action="?/updateItem"
+		class="flex flex-wrap gap-2"
+		use:enhance={() => {
+			return async ({ result, update }) => {
+				await update();
+				if (result.type === 'success') editing = false;
+			};
+		}}
+	>
+		<input type="hidden" name="item_id" value={item.id} />
+
+
+		<input type="time" name="fixed_start" value={item.fixed_start?.slice(0, 5) ?? ''}>
+		<textarea name="action" value={item.action}></textarea>
+		<input type="text" name="who" value={item.who ?? ''}>
+		<input type="text" name="sound" value={item.sound ?? ''}>
+		<input type="text" name="screen" value={item.screen ?? ''} min="0">
+		<input type="number" name="duration_min" value={item.duration_min ?? ''}>
+
+		<button>Save</button>
+		<button type="button" onclick={() => (editing = false)}>Cancel</button>
+	</form>
+</td>
+</tr>
+ {:else}
+
                 <tr>
                     <td class="border px-2 py-1 text-left align-top">{item.fixed_start ?? ''}</td>
 					<td class="whitespace-pre-line border px-2 py-1 text-left align-top">{item.action}</td>
@@ -40,7 +75,8 @@
 					<button name="direction" value="up">↑</button>
 					<button name="direction" value="down">↓</button>
 					</form>
+					<button type="button" onclick={() => (editing = true)}>Edit</button>
 					</td>
 					{/if}
 				</tr>
-		
+				{/if}

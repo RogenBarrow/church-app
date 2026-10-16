@@ -28,10 +28,10 @@ export function formatMinutes(minutes) {
  * Calculates start and end (in minutes) for every item.
  * @param {string} programStartsAt   e.g. "08:30:00"
  * @param {{ service_items: { id: string, fixed_start: string | null, duration_min: number | null }[] }[]} sections
- * @returns {Record<string, { start: number, end: number }>}   item id → its times
+ * @returns {Record<string, { start: number, end: number, overlap: boolean }>}   item id → its times
  */
 export function computeSchedule(programStartsAt, sections) {
-	/** @type {Record<string, { start: number, end: number }>} */
+	/** @type {Record<string, { start: number, end: number, overlap: boolean }>} */
 	const times = {};
 
 	// The "cursor": where the next item will start if it has no fixed time
@@ -41,10 +41,22 @@ export function computeSchedule(programStartsAt, sections) {
 		for (const item of section.service_items) {
             const start = item.fixed_start ? toMinutes(item.fixed_start) : cursor;
             const end = start + (item.duration_min ?? 0);
-			times[item.id] = { start, end };
+			times[item.id] = { start, end, overlap: start < cursor };
 			cursor = end;
 		}
 	}
 
 	return times;
 }
+
+/**
+ * 225 → "3h 45m"
+ * @param {number} minutes
+ * @returns {string}
+ */
+export function formatDuration(minutes) {
+	const hours = Math.floor(minutes / 60);
+	const mins = minutes % 60;
+	return `${hours}h ${mins}m`;
+}
+

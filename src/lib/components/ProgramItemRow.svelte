@@ -15,7 +15,7 @@
 	 */
 
 
-	/** @type {{ item: Item, time: { start: number, end: number }, isPastor: boolean }} */
+	/** @type {{ item: Item, time: { start: number, end: number, overlap: boolean }, isPastor: boolean }} */
 	let { item, time, isPastor } = $props();
 
 
@@ -55,7 +55,7 @@
  {:else}
 
                 <tr>
-                    <td class="border px-2 py-1 text-left align-top">
+                    <td class={['border px-2 py-1 text-left align-top', { 'font-bold text-red-600': time.overlap }]}>
 					{#if item.duration_min}
 						{formatMinutes(time.start)} – {formatMinutes(time.end)}
 					{:else}
@@ -64,7 +64,9 @@
 					{#if item.fixed_start}
 					<span title="Fixed time">📌</span>
 					{/if}
-					
+					{#if time.overlap}
+					<span title="Overlap">⚠</span>
+					{/if}
 				</td>
 					<td class="whitespace-pre-line border px-2 py-1 text-left align-top">{item.action}</td>
                     <td class="whitespace-pre-line border px-2 py-1 text-left align-top">{item.who}</td>

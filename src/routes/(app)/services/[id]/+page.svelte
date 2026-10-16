@@ -1,10 +1,15 @@
 <script>
 import ProgramItemRow from '$lib/components/ProgramItemRow.svelte';
 import { enhance } from '$app/forms';
+import { computeSchedule, toMinutes, formatMinutes, formatDuration } from '$lib/program';
     /** @type {import('./$types').PageProps} */
 let { data, form } = $props();
 let schedule = $derived(computeSchedule(data.service.program_starts_at, data.service.service_sections));
-import { computeSchedule } from '$lib/program';
+let programStart = $derived(toMinutes(data.service.program_starts_at));
+let programEnd = $derived(
+	Math.max(programStart, ...Object.values(schedule).map((t) => t.end))
+);
+
 </script>
 
 {#if form?.message}
@@ -14,7 +19,10 @@ import { computeSchedule } from '$lib/program';
 
 <h1 class="text-2xl font-bold">{data.service.theme ?? data.service.title}</h1>
 
-<p> { data.service.service_date } Program starts at { data.service?.program_starts_at}</p>
+<p>
+	Program: {formatMinutes(programStart)} – {formatMinutes(programEnd)}
+	({formatDuration(programEnd - programStart)})
+</p>
 
 <ul>
     {#each data.service.service_assignments as person }
@@ -79,3 +87,5 @@ import { computeSchedule } from '$lib/program';
 <button>Add section</button>
 </form>
 {/if}
+
+

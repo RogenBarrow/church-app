@@ -3,6 +3,8 @@ import ProgramItemRow from '$lib/components/ProgramItemRow.svelte';
 import { enhance } from '$app/forms';
     /** @type {import('./$types').PageProps} */
 let { data, form } = $props();
+let schedule = $derived(computeSchedule(data.service.program_starts_at, data.service.service_sections));
+import { computeSchedule } from '$lib/program';
 </script>
 
 {#if form?.message}
@@ -50,7 +52,7 @@ let { data, form } = $props();
 		</thead>
 		<tbody>
 			{#each section.service_items as item}
-				<ProgramItemRow {item} isPastor={data.profile?.role === 'pastor'}/>
+				<ProgramItemRow {item} time={schedule[item.id]} isPastor={data.profile?.role === 'pastor'}/>
 			{:else}
 				<tr><td colspan="7">No items in this section</td></tr>
 			{/each}

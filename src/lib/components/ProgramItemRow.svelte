@@ -54,7 +54,7 @@
 </tr>
  {:else}
 
-                <tr>
+                <tr class="break-inside-avoid">
                     <td class={['border px-2 py-1 text-left align-top', { 'font-bold text-red-600': time.overlap }]}>
 					{#if item.duration_min}
 						{formatMinutes(time.start)} – {formatMinutes(time.end)}

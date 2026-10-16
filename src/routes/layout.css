@@ -1,2 +1,16 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
+
+@media print {
+	/* Print background colours (the dark section rows) instead of skipping them */
+	* {
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+	}
+
+	/* A4 portrait with small margins */
+	@page {
+		size: A4 portrait;
+		margin: 1cm;
+	}
+}

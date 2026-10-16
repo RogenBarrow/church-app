@@ -1,14 +1,12 @@
 <script>
 import ProgramItemRow from '$lib/components/ProgramItemRow.svelte';
 import { enhance } from '$app/forms';
-import { computeSchedule, toMinutes, formatMinutes, formatDuration } from '$lib/program';
+import { computeSchedule, toMinutes, formatMinutes, formatDuration, computeProgramEnd } from '$lib/program';
     /** @type {import('./$types').PageProps} */
 let { data, form } = $props();
 let schedule = $derived(computeSchedule(data.service.program_starts_at, data.service.service_sections));
 let programStart = $derived(toMinutes(data.service.program_starts_at));
-let programEnd = $derived(
-	Math.max(programStart, ...Object.values(schedule).map((t) => t.end))
-);
+let programEnd = $derived(computeProgramEnd(programStart, schedule));
 
 </script>
 
@@ -16,6 +14,7 @@ let programEnd = $derived(
 	<p class="text-red-600">{form.message}</p>
 {/if}
 
+<a href="/services/{data.service.id}/print">Print view</a>
 
 <h1 class="text-2xl font-bold">{data.service.theme ?? data.service.title}</h1>
 

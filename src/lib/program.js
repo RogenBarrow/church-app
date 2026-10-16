@@ -60,3 +60,15 @@ export function formatDuration(minutes) {
 	return `${hours}h ${mins}m`;
 }
 
+/**
+ * The end of the program: the latest end of any item,
+ * or the program start if there are no items.
+ * @param {number} programStart
+ * @param {Record<string, { end: number }>} schedule
+ * @returns {number}
+ */
+export function computeProgramEnd(programStart, schedule) {
+	return Math.max(programStart, ...Object.values(schedule).map((t) => t.end));
+}
+
+

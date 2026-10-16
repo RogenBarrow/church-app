@@ -5,7 +5,7 @@
 	let { data, children } = $props();
 </script>
 
-<nav class="flex items-center gap-4 border-b px-4 py-3">
+<nav class="flex items-center gap-4 border-b px-4 py-3 print:hidden">
 	<a href="/" class={{ 'font-bold': page.url.pathname === '/' }}>Home</a>
 	{#if data.profile?.role === 'pastor'}
 		<a href="/members" class={{ 'font-bold': page.url.pathname === '/members' }}>Members</a>

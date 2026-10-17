@@ -21,6 +21,13 @@ let copying = $state(false);
 	</p>
 {/if}
 
+{#if page.url.searchParams.has('template')}
+	<p class="rounded bg-green-100 px-3 py-2 text-green-800">
+		✓ Template saved. You are now editing the template.
+	</p>
+{/if}
+
+
 
 {#if data.profile?.role === 'pastor'}
 <form
@@ -28,22 +35,29 @@ let copying = $state(false);
 	action="?/copy"
 	class="flex gap-2"
 	use:enhance={() => {
-		copying = true;                          // runs when SUBMITTED
-		return async ({ update }) => {           // runs when the server ANSWERS
+		copying = true;                         
+		return async ({ update }) => {           
 			await update();
 			copying = false;
 		};
 	}}
 >
 	<input type="date" name="new_date" required />
-	<button disabled={copying}>{copying ? 'Copying…' : 'Copy to date'}</button>
+	<button disabled={copying}>{copying ? 'Copying…' : (data.service.is_template ? 'Use for date' : 'Copy to date')}
+	</button>
 </form>
 
 {/if}
 
 <a href="/services/{data.service.id}/print">Print view</a>
 
-<h1 class="text-2xl font-bold">{data.service.theme ?? data.service.title}</h1>
+{#if data.service.is_template}
+	<h1 class="text-2xl font-bold">Template: {data.service.title}</h1>
+{:else}
+	<h1 class="text-2xl font-bold">{data.service.theme ?? data.service.title}</h1>
+	<p>{data.service.service_date}</p>
+{/if}
+
 
 <p>
 	Program: {formatMinutes(programStart)} – {formatMinutes(programEnd)}
@@ -112,6 +126,13 @@ let copying = $state(false);
 <input type="text" name="leader_label" placeholder="leader">
 <button>Add section</button>
 </form>
+{/if}
+
+{#if data.profile?.role === 'pastor' && !data.service.is_template}
+	<form method="POST" action="?/saveTemplate" use:enhance class="flex gap-2">
+		<input type="text" name="title" placeholder="Template name, e.g. Regular Sunday" required />
+		<button>Save as template</button>
+	</form>
 {/if}
 
 {#if data.profile?.role === 'pastor'}

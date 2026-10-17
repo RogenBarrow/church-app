@@ -241,6 +241,28 @@ return { success: true };
         return redirect(303, '/services?deleted=1')
     },
     
+    saveTemplate: async ({ request, locals, params }) => {
+        const formdata = await request.formData();
+        const title = formdata.get('title');
+    
+        if (typeof title !== 'string' || !title) {
+            return fail(400, { message: 'Give the template a name' })
+        }
+    
+        const { data: newId, error: copyError } = await locals.supabase.rpc('copy_service', {
+            source_id: params.id,
+            new_date: null,
+            as_template: true,
+            new_title: title
+        });
+    
+        if (copyError) {
+            return fail(400, { message: copyError.message })
+        }
+
+        return redirect(303, `/services/${newId}?template=1`)
+    },
+    
 
 
 }

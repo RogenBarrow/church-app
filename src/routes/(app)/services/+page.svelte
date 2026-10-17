@@ -21,6 +21,8 @@
 
 {/if}
 
+<a href="/services/templates">Templates</a>
+
 
 
 <ul>

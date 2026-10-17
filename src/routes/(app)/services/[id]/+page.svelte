@@ -9,6 +9,7 @@ let schedule = $derived(computeSchedule(data.service.program_starts_at, data.ser
 let programStart = $derived(toMinutes(data.service.program_starts_at));
 let programEnd = $derived(computeProgramEnd(programStart, schedule));
 let copying = $state(false);
+let editingDetails = $state(false);
 </script>
 
 {#if form?.message}
@@ -44,7 +45,7 @@ let copying = $state(false);
 >
 	<input type="date" name="new_date" required />
 	<button disabled={copying}>{copying ? 'Copying…' : (data.service.is_template ? 'Use for date' : 'Copy to date')}
-	</button>
+</button>
 </form>
 
 {/if}
@@ -69,6 +70,64 @@ let copying = $state(false);
         <li>{person.role_name} : {person.person_label}</li>
     {/each}
 </ul>
+
+{#if data.profile?.role === 'pastor'}
+	{#if editingDetails}
+		<form
+			method="POST"
+			action="?/updateDetails"
+			class="my-4 flex flex-col gap-2 rounded border p-4"
+			use:enhance={() => {
+				return async ({ result, update }) => {
+					await update();
+					if (result.type === 'success') editingDetails = false;
+				};
+			}}
+		>
+			<label>
+				Title
+				<input type="text" name="title" value={data.service.title} required />
+			</label>
+
+			
+			<label>
+			Theme
+				<input type="text" name="theme" value={data.service.theme ?? ''}>
+			</label> 
+
+			{#if !data.service.is_template}
+				
+				<label>
+				Date
+					<input type="date" name="service_date" value={data.service.service_date} required>
+				</label>
+
+			{/if}
+
+				 <label>
+					Program starts at
+					<input type="time" name="program_starts_at" value={data.service.program_starts_at.slice(0, 5)} required>
+				 </label>
+
+			<h3 class="font-bold">Key people</h3>
+			{#each data.service.service_assignments as person}
+				<input type="hidden" name="assignment_id" value={person.id} />
+				<label>
+					{person.role_name}
+					<input type="text" name="person_label" value={person.person_label ?? ''} />
+				</label>
+			{/each}
+
+			<div class="flex gap-2">
+				<button>Save</button>
+				<button type="button" onclick={() => (editingDetails = false)}>Cancel</button>
+			</div>
+		</form>
+	{:else}
+	<button type="button" onclick={() => (editingDetails = true)}>Edit details</button>
+	{/if}
+{/if}
+
 
 {#each data.service.service_sections as section}
 	<h2 class="mt-6 font-bold">

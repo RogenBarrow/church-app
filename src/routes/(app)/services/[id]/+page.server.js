@@ -1,3 +1,4 @@
+import { error } from '@sveltejs/kit';
 import { fail, redirect } from '@sveltejs/kit';
 
 
@@ -263,7 +264,46 @@ return { success: true };
         return redirect(303, `/services/${newId}?template=1`)
     },
     
+    updateDetails: async ({ request, locals, params }) => {
+        const formdata = await request.formData();
+        const title = formdata.get('title');
+        const theme = formdata.get('theme');
+        const service_date = formdata.get('service_date');
+        const program_starts_at = formdata.get('program_starts_at');
+    
+        if (typeof title !== 'string' || !title || typeof program_starts_at !== 'string' || !program_starts_at) {
+            return fail(400, { message: 'Title and start time are required' })
+        }
 
+
+        const { error: queryError } = await locals.supabase
+            .from('services')
+            .update({ title, theme: theme || null, service_date: service_date || null, program_starts_at })
+            .eq('id', params.id)
+
+        if (queryError) {
+            return fail(400, { message: queryError.message })
+        }
+    
+        const ids = formdata.getAll('assignment_id');
+        const labels = formdata.getAll('person_label');
+    
+        for (let i = 0; i < ids.length; i++) {
+
+            const { error: assignmentError } = await locals.supabase
+                .from('service_assignments')
+                .update({ person_label: labels[i] || null })
+                .eq('id', ids[i])
+
+        if (assignmentError) {
+            return fail(400, { message: assignmentError.message })
+        }
+
+        }
+
+        return { success: true }
+    },
+    
 
 }
 

@@ -6,7 +6,7 @@ export const load = async ({ params, locals }) => {
                                             .from('services')
                                             .select(`
         id, title, service_date, theme, program_starts_at, is_template,
-        service_assignments ( role_name, person_label, position ),
+        service_assignments ( id, role_name, person_label, position ),
         service_sections (
             id, title, leader_label, position,
             service_items ( id, position, fixed_start, duration_min, action, who, sound, screen )

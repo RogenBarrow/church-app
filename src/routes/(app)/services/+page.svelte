@@ -1,7 +1,14 @@
 <script>
+	import { page } from '$app/state';
     /** @type {import('./$types').PageProps} */
 	let { data } = $props();
 </script>
+
+{#if page.url.searchParams.has('deleted')}
+	<p class="rounded bg-green-100 px-3 py-2 text-green-800">
+		✓ Service deleted.
+	</p>
+{/if}
 
 <h1>{data.past ? 'Past services' : 'Upcoming services'}</h1>
 

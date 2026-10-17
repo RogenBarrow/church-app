@@ -1,4 +1,4 @@
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 
 
 /** @satisfies {import('./$types').Actions} */
@@ -199,8 +199,48 @@ return { success: true };
 
         return { success: true }
         
-    }
+    },
 
+    copy: async ({ request, locals, params }) => {
+        const formdata = await request.formData();
+        const new_date = formdata.get('new_date');
+    
+        if (typeof new_date !== 'string' || !new_date) {
+            return fail(400, { message: 'Date is required' })
+        }
+    
+        const { data: newId, error: copyError } = await locals.supabase.rpc('copy_service', {
+            source_id: params.id,
+            new_date,
+            as_template: false
+        });
+    
+        if (copyError) {
+            return fail(400, { message: copyError.message })
+        }
+    
+        return redirect(303, `/services/${newId}?copied=1`);
+    },
+    
+    deleteService: async ({ locals, params }) => {
+
+        const { data: deleted, error: deleteError } = await locals.supabase
+            .from('services')
+            .delete()
+            .eq('id', params.id)
+            .select('id');
+    
+        if (deleteError) {
+            return fail(400, { message: deleteError.message})
+        }
+    
+        if (deleted.length === 0 ) {
+            return fail(403, { message: 'You are not allowed to delete this service' })
+        }
+    
+        return redirect(303, '/services?deleted=1')
+    },
+    
 
 
 }

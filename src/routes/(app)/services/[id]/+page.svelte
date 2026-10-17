@@ -2,16 +2,43 @@
 import ProgramItemRow from '$lib/components/ProgramItemRow.svelte';
 import { enhance } from '$app/forms';
 import { computeSchedule, toMinutes, formatMinutes, formatDuration, computeProgramEnd } from '$lib/program';
+import { page } from '$app/state';
     /** @type {import('./$types').PageProps} */
 let { data, form } = $props();
 let schedule = $derived(computeSchedule(data.service.program_starts_at, data.service.service_sections));
 let programStart = $derived(toMinutes(data.service.program_starts_at));
 let programEnd = $derived(computeProgramEnd(programStart, schedule));
-
+let copying = $state(false);
 </script>
 
 {#if form?.message}
 	<p class="text-red-600">{form.message}</p>
+{/if}
+
+{#if page.url.searchParams.has('copied')}
+	<p class="rounded bg-green-100 px-3 py-2 text-green-800">
+		✓ Program copied. You are now editing the copy for {data.service.service_date}.
+	</p>
+{/if}
+
+
+{#if data.profile?.role === 'pastor'}
+<form
+	method="POST"
+	action="?/copy"
+	class="flex gap-2"
+	use:enhance={() => {
+		copying = true;                          // runs when SUBMITTED
+		return async ({ update }) => {           // runs when the server ANSWERS
+			await update();
+			copying = false;
+		};
+	}}
+>
+	<input type="date" name="new_date" required />
+	<button disabled={copying}>{copying ? 'Copying…' : 'Copy to date'}</button>
+</form>
+
 {/if}
 
 <a href="/services/{data.service.id}/print">Print view</a>
@@ -86,5 +113,20 @@ let programEnd = $derived(computeProgramEnd(programStart, schedule));
 <button>Add section</button>
 </form>
 {/if}
+
+{#if data.profile?.role === 'pastor'}
+	<form
+		method="POST"
+		action="?/deleteService"
+		use:enhance
+		onsubmit={(event) => {
+			if (!confirm('Delete this whole service, with all its sections and items? This cannot be undone.')) event.preventDefault();
+		}}
+		class="mt-10"
+	>
+		<button class="text-red-600">Delete service</button>
+	</form>
+{/if}
+
 
 

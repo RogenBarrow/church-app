@@ -14,6 +14,7 @@
 		<a href="/services/new" class={{ 'font-bold': page.url.pathname === '/services/new' }}>New Service</a>
 	{/if}
     <a href="/services" class={{ 'font-bold': page.url.pathname === '/services' }}>Services</a>
+	<a href="/availability" class={{ 'font-bold': page.url.pathname === '/availability' }}>My availability</a>
 	<div class="ml-auto flex items-center gap-4">
 		<p>{data.profile?.full_name ?? data.user?.email}</p>
 		<a href="/profile" class={{ 'font-bold': page.url.pathname === '/profile' }}>My Profile</a>

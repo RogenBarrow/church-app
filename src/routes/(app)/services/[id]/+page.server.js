@@ -303,6 +303,44 @@ return { success: true };
 
         return { success: true }
     },
+
+    approve: async ({ locals, params }) => {
+       
+         const { data: updated, error: approveError } = await locals.supabase 
+                .from('services')
+                .update({status: 'approved'})
+                .eq('id', params.id)
+                .select('id');
+
+        if (approveError) {
+            return fail(400, { message: approveError.message })
+        }
+
+        if (updated.length === 0) {
+            return fail(403, { message: 'Only pastors can approve a service' })
+        }
+
+        return { success: true };
+    },
+    
+    unapprove: async ({ locals, params }) => {
+        const { data: updated, error: approveError } = await locals.supabase 
+                .from('services')
+                .update({status: 'draft'})
+                .eq('id', params.id)
+                .select('id');
+
+        if (approveError) {
+            return fail(400, { message: approveError.message })
+        }
+
+        if (updated.length === 0) {
+            return fail(403, { message: 'Only pastors can unapprove a service' })
+        }
+
+        return { success: true };
+    },
+    
     
 
 }

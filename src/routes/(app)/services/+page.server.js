@@ -9,7 +9,7 @@ const past = url.searchParams.has('past')
 
 let query = locals.supabase
 		.from('services')
-		.select('id, title, service_date, theme')
+		.select('id, title, service_date, theme, status')
 		.eq('is_template', false);
 
 if (past) {

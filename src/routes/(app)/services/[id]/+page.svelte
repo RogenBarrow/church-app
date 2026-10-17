@@ -59,6 +59,29 @@ let editingDetails = $state(false);
 	<p>{data.service.service_date}</p>
 {/if}
 
+<span
+	class={[
+		'inline-block rounded px-2 py-0.5 text-sm',
+		data.service.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+	]}
+>
+	{data.service.status === 'approved' ? 'Approved ✓' : 'Draft'}
+</span>
+
+{#if data.profile?.role === 'pastor'}
+	{#if data.service.status === 'approved'}
+		<form method="POST" action="?/unapprove" use:enhance>
+			<button>Back to draft</button>
+		</form>
+	{:else}
+		<form method="POST" action="?/approve" use:enhance>
+			<button>Approve</button>
+		</form>
+	{/if}
+{/if}
+
+
+
 
 <p>
 	Program: {formatMinutes(programStart)} – {formatMinutes(programEnd)}

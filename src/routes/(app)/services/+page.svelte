@@ -28,9 +28,11 @@
 <ul>
 {#each data.services as service }
     <li><a href="/services/{service.id}">{service.service_date} {service.theme ?? service.title}</a></li>
+    {#if service.status !== 'approved'}
+    <span class="text-sm text-yellow-700">(Draft)</span>
 {:else}
 	<li>{data.past ? 'No past services' : 'No upcoming services'}</li>
-
+    {/if}
 {/each}
 </ul>
 

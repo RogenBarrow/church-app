@@ -2,25 +2,27 @@ import { error } from '@sveltejs/kit';
 
 /** @type {import('./$types').LayoutServerLoad} */
 export const load = async ({ params, locals }) => {
-    const { data: service, error: queryError } = await locals.supabase
-                                            .from('services')
-                                            .select(`
+	const { data: service, error: queryError } = await locals.supabase
+		.from('services')
+		.select(
+			`
         id, title, service_date, theme, program_starts_at, is_template, status, approved_at,
-        service_assignments ( id, role_name, person_label, position ),
+        service_assignments ( id, role_name, person_label, profile_id, position ),
         service_sections (
             id, title, leader_label, position,
             service_items ( id, position, fixed_start, duration_min, action, who, sound, screen )
         )
-    `)
-                                            .eq('id', params.id)
-                                            .order('position', { referencedTable: 'service_assignments' })
-                                            .order('position', { referencedTable: 'service_sections' })
-                                            .order('position', { referencedTable: 'service_sections.service_items' })
-                                            .maybeSingle();
+    `
+		)
+		.eq('id', params.id)
+		.order('position', { referencedTable: 'service_assignments' })
+		.order('position', { referencedTable: 'service_sections' })
+		.order('position', { referencedTable: 'service_sections.service_items' })
+		.maybeSingle();
 
-            if (queryError || !service ) {
-                error(404, 'Service not found' )
-            }
+	if (queryError || !service) {
+		error(404, 'Service not found');
+	}
 
-            return { service }
-}
+	return { service };
+};

@@ -4,12 +4,11 @@
  * @returns {number}
  */
 export function toMinutes(time) {
+	const [h, m] = time.split(':');
+	const hours = Number(h);
+	const minutes = Number(m);
 
-    const [h, m] = time.split(':');
-    const hours = Number(h);
-    const minutes = Number(m);
-
-    return hours * 60 + minutes;
+	return hours * 60 + minutes;
 }
 
 /**
@@ -18,10 +17,9 @@ export function toMinutes(time) {
  * @returns {string}
  */
 export function formatMinutes(minutes) {
-	
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-    return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+	const hours = Math.floor(minutes / 60);
+	const mins = minutes % 60;
+	return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
 }
 
 /**
@@ -39,8 +37,8 @@ export function computeSchedule(programStartsAt, sections) {
 
 	for (const section of sections) {
 		for (const item of section.service_items) {
-            const start = item.fixed_start ? toMinutes(item.fixed_start) : cursor;
-            const end = start + (item.duration_min ?? 0);
+			const start = item.fixed_start ? toMinutes(item.fixed_start) : cursor;
+			const end = start + (item.duration_min ?? 0);
 			times[item.id] = { start, end, overlap: start < cursor };
 			cursor = end;
 		}
@@ -70,5 +68,3 @@ export function formatDuration(minutes) {
 export function computeProgramEnd(programStart, schedule) {
 	return Math.max(programStart, ...Object.values(schedule).map((t) => t.end));
 }
-
-

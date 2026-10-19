@@ -20,7 +20,6 @@
 		<p class={form?.success ? 'text-green-700' : 'text-red-600'}>{form.message}</p>
 	{/if}
 
-
 	<button>Login</button>
 	<button formaction="?/signup">Signup</button>
 </form>

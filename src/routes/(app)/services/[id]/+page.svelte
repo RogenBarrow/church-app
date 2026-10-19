@@ -1,15 +1,23 @@
 <script>
-import ProgramItemRow from '$lib/components/ProgramItemRow.svelte';
-import { enhance } from '$app/forms';
-import { computeSchedule, toMinutes, formatMinutes, formatDuration, computeProgramEnd } from '$lib/program';
-import { page } from '$app/state';
-    /** @type {import('./$types').PageProps} */
-let { data, form } = $props();
-let schedule = $derived(computeSchedule(data.service.program_starts_at, data.service.service_sections));
-let programStart = $derived(toMinutes(data.service.program_starts_at));
-let programEnd = $derived(computeProgramEnd(programStart, schedule));
-let copying = $state(false);
-let editingDetails = $state(false);
+	import ProgramItemRow from '$lib/components/ProgramItemRow.svelte';
+	import { enhance } from '$app/forms';
+	import {
+		computeSchedule,
+		toMinutes,
+		formatMinutes,
+		formatDuration,
+		computeProgramEnd
+	} from '$lib/program';
+	import { page } from '$app/state';
+	/** @type {import('./$types').PageProps} */
+	let { data, form } = $props();
+	let schedule = $derived(
+		computeSchedule(data.service.program_starts_at, data.service.service_sections)
+	);
+	let programStart = $derived(toMinutes(data.service.program_starts_at));
+	let programEnd = $derived(computeProgramEnd(programStart, schedule));
+	let copying = $state(false);
+	let editingDetails = $state(false);
 </script>
 
 {#if form?.message}
@@ -28,26 +36,24 @@ let editingDetails = $state(false);
 	</p>
 {/if}
 
-
-
 {#if data.profile?.role === 'pastor'}
-<form
-	method="POST"
-	action="?/copy"
-	class="flex gap-2"
-	use:enhance={() => {
-		copying = true;                         
-		return async ({ update }) => {           
-			await update();
-			copying = false;
-		};
-	}}
->
-	<input type="date" name="new_date" required />
-	<button disabled={copying}>{copying ? 'Copying…' : (data.service.is_template ? 'Use for date' : 'Copy to date')}
-</button>
-</form>
-
+	<form
+		method="POST"
+		action="?/copy"
+		class="flex gap-2"
+		use:enhance={() => {
+			copying = true;
+			return async ({ update }) => {
+				await update();
+				copying = false;
+			};
+		}}
+	>
+		<input type="date" name="new_date" required />
+		<button disabled={copying}
+			>{copying ? 'Copying…' : data.service.is_template ? 'Use for date' : 'Copy to date'}
+		</button>
+	</form>
 {/if}
 
 <a href="/services/{data.service.id}/print">Print view</a>
@@ -62,7 +68,9 @@ let editingDetails = $state(false);
 <span
 	class={[
 		'inline-block rounded px-2 py-0.5 text-sm',
-		data.service.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+		data.service.status === 'approved'
+			? 'bg-green-100 text-green-800'
+			: 'bg-yellow-100 text-yellow-800'
 	]}
 >
 	{data.service.status === 'approved' ? 'Approved ✓' : 'Draft'}
@@ -80,18 +88,15 @@ let editingDetails = $state(false);
 	{/if}
 {/if}
 
-
-
-
 <p>
 	Program: {formatMinutes(programStart)} – {formatMinutes(programEnd)}
 	({formatDuration(programEnd - programStart)})
 </p>
 
 <ul>
-    {#each data.service.service_assignments as person }
-        <li>{person.role_name} : {person.person_label}</li>
-    {/each}
+	{#each data.service.service_assignments as person}
+		<li>{person.role_name} : {person.person_label}</li>
+	{/each}
 </ul>
 
 {#if data.profile?.role === 'pastor'}
@@ -112,31 +117,42 @@ let editingDetails = $state(false);
 				<input type="text" name="title" value={data.service.title} required />
 			</label>
 
-			
 			<label>
-			Theme
-				<input type="text" name="theme" value={data.service.theme ?? ''}>
-			</label> 
+				Theme
+				<input type="text" name="theme" value={data.service.theme ?? ''} />
+			</label>
 
 			{#if !data.service.is_template}
-				
 				<label>
-				Date
-					<input type="date" name="service_date" value={data.service.service_date} required>
+					Date
+					<input type="date" name="service_date" value={data.service.service_date} required />
 				</label>
-
 			{/if}
 
-				 <label>
-					Program starts at
-					<input type="time" name="program_starts_at" value={data.service.program_starts_at.slice(0, 5)} required>
-				 </label>
+			<label>
+				Program starts at
+				<input
+					type="time"
+					name="program_starts_at"
+					value={data.service.program_starts_at.slice(0, 5)}
+					required
+				/>
+			</label>
 
 			<h3 class="font-bold">Key people</h3>
 			{#each data.service.service_assignments as person}
 				<input type="hidden" name="assignment_id" value={person.id} />
 				<label>
 					{person.role_name}
+					<select name="profile_id">
+						<option value="">— Guest (type a name) —</option>
+						{#each data.members as member}
+							<option value={member.id} selected={member.id === person.profile_id}>
+								{member.full_name ?? '(no name yet)'}
+								{data.unavailableIds.includes(member.id) ? ' ⚠️ unavailable' : ''}
+							</option>
+						{/each}
+					</select>
 					<input type="text" name="person_label" value={person.person_label ?? ''} />
 				</label>
 			{/each}
@@ -147,10 +163,9 @@ let editingDetails = $state(false);
 			</div>
 		</form>
 	{:else}
-	<button type="button" onclick={() => (editingDetails = true)}>Edit details</button>
+		<button type="button" onclick={() => (editingDetails = true)}>Edit details</button>
 	{/if}
 {/if}
-
 
 {#each data.service.service_sections as section}
 	<h2 class="mt-6 font-bold">
@@ -160,13 +175,18 @@ let editingDetails = $state(false);
 		{/if}
 	</h2>
 	{#if data.profile?.role === 'pastor'}
-<form method="POST" action="?/deleteSection" use:enhance onsubmit={(event) => {
-	if (!confirm('Delete this section and all its items?')) event.preventDefault();
-}}>
-<input type="hidden" name="section_id" value={section.id}>
-<button>Delete section</button>
-</form>
-{/if}
+		<form
+			method="POST"
+			action="?/deleteSection"
+			use:enhance
+			onsubmit={(event) => {
+				if (!confirm('Delete this section and all its items?')) event.preventDefault();
+			}}
+		>
+			<input type="hidden" name="section_id" value={section.id} />
+			<button>Delete section</button>
+		</form>
+	{/if}
 
 	<table class="w-full border-collapse text-sm">
 		<thead>
@@ -182,32 +202,35 @@ let editingDetails = $state(false);
 		</thead>
 		<tbody>
 			{#each section.service_items as item}
-				<ProgramItemRow {item} time={schedule[item.id]} isPastor={data.profile?.role === 'pastor'}/>
+				<ProgramItemRow
+					{item}
+					time={schedule[item.id]}
+					isPastor={data.profile?.role === 'pastor'}
+				/>
 			{:else}
 				<tr><td colspan="7">No items in this section</td></tr>
 			{/each}
 		</tbody>
 	</table>
-    {#if data.profile?.role === 'pastor'}
-	<form method="POST" action="?/addItem" use:enhance class="mt-2 flex flex-wrap gap-2">
-		<input type="hidden" name="section_id" value={section.id} />
-        <input type="time" name="fixed_start" placeholder="Time">
-        <input type="text" name="who" placeholder="Who">
-        <input type="text" name="sound" placeholder="Sound">
-        <input type="text" name="screen" placeholder="Screen">
-        <input type="number" name="duration_min" placeholder="Minutes" min="0">
-        <textarea name="action" placeholder="Action / song" rows="2"></textarea>
-		<button>Add item</button>
-	</form>
-{/if}
-
+	{#if data.profile?.role === 'pastor'}
+		<form method="POST" action="?/addItem" use:enhance class="mt-2 flex flex-wrap gap-2">
+			<input type="hidden" name="section_id" value={section.id} />
+			<input type="time" name="fixed_start" placeholder="Time" />
+			<input type="text" name="who" placeholder="Who" />
+			<input type="text" name="sound" placeholder="Sound" />
+			<input type="text" name="screen" placeholder="Screen" />
+			<input type="number" name="duration_min" placeholder="Minutes" min="0" />
+			<textarea name="action" placeholder="Action / song" rows="2"></textarea>
+			<button>Add item</button>
+		</form>
+	{/if}
 {/each}
 {#if data.profile?.role === 'pastor'}
-<form method="POST" action="?/addSection" use:enhance>
-<input type="text" name="title" placeholder="title">
-<input type="text" name="leader_label" placeholder="leader">
-<button>Add section</button>
-</form>
+	<form method="POST" action="?/addSection" use:enhance>
+		<input type="text" name="title" placeholder="title" />
+		<input type="text" name="leader_label" placeholder="leader" />
+		<button>Add section</button>
+	</form>
 {/if}
 
 {#if data.profile?.role === 'pastor' && !data.service.is_template}
@@ -223,13 +246,15 @@ let editingDetails = $state(false);
 		action="?/deleteService"
 		use:enhance
 		onsubmit={(event) => {
-			if (!confirm('Delete this whole service, with all its sections and items? This cannot be undone.')) event.preventDefault();
+			if (
+				!confirm(
+					'Delete this whole service, with all its sections and items? This cannot be undone.'
+				)
+			)
+				event.preventDefault();
 		}}
 		class="mt-10"
 	>
 		<button class="text-red-600">Delete service</button>
 	</form>
 {/if}
-
-
-

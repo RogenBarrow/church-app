@@ -9,12 +9,12 @@
 
 <ul>
 	{#each data.templates as template}
-        <li>
-            <a href="/services/{template.id}">{ template.title}</a>
-        </li>
+		<li>
+			<a href="/services/{template.id}">{template.title}</a>
+		</li>
 	{:else}
-         <li>
-            <p>No templates yet? Open service and click "Save as template".</p>
-         </li>
+		<li>
+			<p>No templates yet? Open service and click "Save as template".</p>
+		</li>
 	{/each}
 </ul>

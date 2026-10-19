@@ -42,6 +42,5 @@ export const actions = {
 			success: true,
 			message: 'Check your email and click the link to confirm your account.'
 		};
-		
 	}
 };

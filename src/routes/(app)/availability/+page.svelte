@@ -9,8 +9,8 @@
 <p>Add the dates you're <strong>not</strong> available. On all other dates you can be scheduled.</p>
 
 {#if form?.message}
-		<p class={form?.success ? 'text-green-700' : 'text-red-600'}>{form.message}</p>
-	{/if}
+	<p class={form?.success ? 'text-green-700' : 'text-red-600'}>{form.message}</p>
+{/if}
 
 <ul class="my-4">
 	{#each data.blocks as block}
@@ -37,14 +37,17 @@
 
 <h2 class="font-bold">Add a blockout</h2>
 <form method="POST" action="?/add" use:enhance class="flex flex-wrap items-end gap-2">
-         <label> Start date
-         <input type="date" name="starts_on" required>
-        </label>
-        <label> End date
-         <input type="date" name="ends_on" required>
-        </label>
-        <label> Note
-         <input type="text" name="note" placeholder="Family trip">
-        </label>
+	<label>
+		Start date
+		<input type="date" name="starts_on" required />
+	</label>
+	<label>
+		End date
+		<input type="date" name="ends_on" required />
+	</label>
+	<label>
+		Note
+		<input type="text" name="note" placeholder="Family trip" />
+	</label>
 	<button>Add</button>
 </form>
